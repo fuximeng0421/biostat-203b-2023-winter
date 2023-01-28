@@ -176,8 +176,8 @@ head -n "$2" "$1" | tail -n "$3"
 Using `chmod` to make the file executable by the owner, and run
 
 ```{bash}
-chmod 700 ./middle.sh
-./middle.sh pg42671.txt 20 5
+chmod 700 ~/Desktop/203b-hw/middle.sh
+~/Desktop/203b-hw/middle.sh pg42671.txt 20 5
 ```
 
 Explain the output. 

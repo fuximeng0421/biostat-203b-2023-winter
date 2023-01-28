@@ -1,6 +1,6 @@
 
 ---title: "Biostat 203B Homework 1"
-subtitle: Due Jan 27 @ 11:54PM
+subtitle: Due Jan 27 @ 11:53PM
 author: Ximeng Fu 406071937
 format:
   html:

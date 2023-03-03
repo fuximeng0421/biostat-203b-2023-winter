@@ -1,0 +1,3 @@
+"0","gzcat ~/mimic/core/admissions.csv.gz | wc -l"
+"1","  523741
+"

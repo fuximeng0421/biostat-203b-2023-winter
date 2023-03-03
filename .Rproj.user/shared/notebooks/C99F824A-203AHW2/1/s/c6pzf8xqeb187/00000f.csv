@@ -1,0 +1,7 @@
+"0","icustays_tble %>%"
+"0","  distinct(subject_id, .keep_all = FALSE) %>%"
+"0","  nrow()"
+"1","[1]"
+"1"," 53150"
+"1","
+"

@@ -1,0 +1,8 @@
+"0","gzcat ~/mimic/core/admissions.csv.gz |\
+ awk -F "","" 'NR == 1 {print $9}; NR > 1 {print $9 | ""sort | uniq -c""}' "
+"1","insurance
+"
+"1","50850 Medicaid
+171360 Medicare
+301530 Other
+"

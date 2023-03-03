@@ -1,0 +1,6 @@
+"0","stay = difftime(admissions_tble$dischtime,admissions_tble$admittime,units = c('days'))"
+"0","ggplot(data = admissions_tble)+"
+"0","  geom_density(mapping=aes(x=stay))+"
+"0","  labs(x=""Length of hospital stay"","
+"0","       title=""Length of hospital stay of patients"")"
+"0",""

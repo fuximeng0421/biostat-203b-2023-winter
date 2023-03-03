@@ -1,0 +1,4 @@
+"0","ggplot(data = admissions_tble) + "
+"0","  stat_count(mapping = aes(x = lubridate::wday(admittime, label = T))) +"
+"0","  labs(title = ""Admission time by week day"") +"
+"0","  labs(x = ""Admission week day"")"

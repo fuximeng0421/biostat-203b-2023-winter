@@ -1,0 +1,15 @@
+"0","for datafile in ~/mimic/core/*.gz
+do
+  echo $datafile
+  gzcat $datafile | wc -l
+done"
+"1","/Users/felicity/mimic/core/admissions.csv.gz
+"
+"1","  523741
+/Users/felicity/mimic/core/patients.csv.gz
+"
+"1","  382279
+/Users/felicity/mimic/core/transfers.csv.gz
+"
+"1"," 2189536
+"

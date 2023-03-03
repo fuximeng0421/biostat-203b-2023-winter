@@ -1,0 +1,12 @@
+"0","ln -s /Users/felicity/Desktop/ ~/mimic
+ls ~/mimic"
+"1","Desktop
+LICENSE.txt
+MIMIC-reduce-chartevents
+SHA256SUMS.txt
+core
+hosp
+icu
+index.html
+mimic-iv-1.0
+"

@@ -1,0 +1,23 @@
+"0","labevents_modified <- "
+"0","  read_csv(str_c(mimic_path,""/hosp/labevents_filtered_itemid.csv.gz""), "
+"0","           col_types = cols_only(subject_id = col_double(), "
+"0","                                 itemid = col_double(), "
+"0","                                 charttime = col_datetime(), "
+"0","                                 valuenum = col_double()),"
+"0","           lazy = TRUE)"
+"0","d_labitems_tble <- read_csv(str_c(mimic_path,""/hosp/d_labitems.csv.gz""))"
+"2","[1mRows: [22m[34m1630[39m [1mColumns: [22m[34m5[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m─────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (4): label, fluid, category, loinc_code
+[32mdbl[39m (1): itemid"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","choice_lab <- c(""50912"", ""50971"", ""50983"", ""50902"", ""50882"", ""51221"", ""51301"", ""50931"", ""50960"", ""50893"")"
+"0","labevents_tble <- labevents_modified"
+"0","labevents_tble <- labevents_tble %>%"
+"0","  arrange(subject_id, itemid) %>%"
+"0","  semi_join(icustays_tble, by = c(""subject_id"")) %>%"
+"0","  left_join(select(d_labitems_tble, itemid, label), by = c(""itemid"")) %>%"
+"0","  print(width = Inf)"

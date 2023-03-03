@@ -1,0 +1,4 @@
+"0","icustays_tble <- icustays_tble %>%"
+"0","  arrange(subject_id, intime) %>%"
+"0","  distinct(subject_id, .keep_all = TRUE) %>%"
+"0","  print(width = Inf)"

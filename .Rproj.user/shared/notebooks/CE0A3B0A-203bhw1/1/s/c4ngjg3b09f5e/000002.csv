@@ -1,0 +1,39 @@
+"0","ls -l ~/mimic/core
+ls -l ~/mimic/hosp
+ls -l ~/mimic/icu"
+"1","total 142944
+-rw-rw-r--@ 1 felicity  staff  17208966 Mar 15  2021 admissions.csv.gz
+-rw-rw-r--@ 1 felicity  staff       606 Jan  4  2022 index.html
+-rw-rw-r--@ 1 felicity  staff   2955582 Mar 15  2021 patients.csv.gz
+-rw-rw-r--@ 1 felicity  staff  53014503 Mar 15  2021 transfers.csv.gz
+total 9248784
+-rw-rw-r--@ 1 felicity  staff      430049 Mar 15  2021 d_hcpcs.csv.gz
+-rw-rw-r--@ 1 felicity  staff      863239 Mar 15  2021 d_icd_diagnoses.csv.gz
+-rw-rw-r--@ 1 felicity  staff      579998 Mar 15  2021 d_icd_procedures.csv.gz
+-rw-rw-r--@ 1 felicity  staff       14898 Mar 15  2021 d_labitems.csv.gz
+-rw-rw-r--@ 1 felicity  staff    29531152 Mar 15  2021 diagnoses_icd.csv.gz
+-rw-rw-r--@ 1 felicity  staff    11684062 Mar 15  2021 drgcodes.csv.gz
+-rw-rw-r--@ 1 felicity  staff   515763427 Mar 15  2021 emar.csv.gz
+-rw-rw-r--@ 1 felicity  staff   476252563 Mar 15  2021 emar_detail.csv.gz
+-rw-rw-r--@ 1 felicity  staff     2098831 Mar 15  2021 hcpcsevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff        2325 Jan  4  2022 index.html
+-rw-rw-r--@ 1 felicity  staff  2091865786 Mar 15  2021 labevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff   171624288 Jan 27  2022 labevents_filtered_itemid.csv.gz
+-rw-rw-r--@ 1 felicity  staff    99133381 Mar 15  2021 microbiologyevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff   422874088 Mar 15  2021 pharmacy.csv.gz
+-rw-rw-r--@ 1 felicity  staff   501381155 Mar 15  2021 poe.csv.gz
+-rw-rw-r--@ 1 felicity  staff    24020923 Mar 15  2021 poe_detail.csv.gz
+-rw-rw-r--@ 1 felicity  staff   367041717 Mar 15  2021 prescriptions.csv.gz
+-rw-rw-r--@ 1 felicity  staff     7750325 Mar 15  2021 procedures_icd.csv.gz
+-rw-rw-r--@ 1 felicity  staff     9565293 Mar 15  2021 services.csv.gz
+total 5698008
+-rw-rw-r--@ 1 felicity  staff  2350783547 Mar 15  2021 chartevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff   110272408 Jan 27  2022 chartevents_filtered_itemid.csv.gz
+-rw-rw-r--@ 1 felicity  staff       55917 Mar 15  2021 d_items.csv.gz
+-rw-rw-r--@ 1 felicity  staff    43296273 Mar 15  2021 datetimeevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff     2848628 Mar 15  2021 icustays.csv.gz
+-rw-rw-r--@ 1 felicity  staff        1103 Jan  4  2022 index.html
+-rw-rw-r--@ 1 felicity  staff   352443512 Mar 15  2021 inputevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff    37095672 Mar 15  2021 outputevents.csv.gz
+-rw-rw-r--@ 1 felicity  staff    20567368 Mar 15  2021 procedureevents.csv.gz
+"

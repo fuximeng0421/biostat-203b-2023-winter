@@ -1,0 +1,13 @@
+"0","gzcat ~/mimic/core/admissions.csv.gz |\
+ awk -F "","" 'NR == 1 {print $12}; NR > 1 {print $12 | ""sort | uniq -c""}' "
+"1","ethnicity
+"
+"1","1535 AMERICAN INDIAN/ALASKA NATIVE
+24506 ASIAN
+80293 BLACK/AFRICAN AMERICAN
+29823 HISPANIC/LATINO
+26813 OTHER
+3740 UNABLE TO OBTAIN
+19400 UNKNOWN
+337630 WHITE
+"

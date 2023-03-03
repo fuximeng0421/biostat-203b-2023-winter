@@ -1,0 +1,4 @@
+"0","admissions_tble <- admissions_tble %>%"
+"0","  arrange(subject_id, hadm_id) %>%"
+"0","  semi_join(icustays_tble, by = c(""subject_id"", ""hadm_id"")) %>%"
+"0","  print(width = Inf)"

@@ -1,0 +1,8 @@
+"0","for datafile in ~/mimic/core/*.gz
+do
+  ls -l $datafile
+done"
+"1","-rw-rw-r--@ 1 felicity  staff  17208966 Mar 15  2021 /Users/felicity/mimic/core/admissions.csv.gz
+-rw-rw-r--@ 1 felicity  staff  2955582 Mar 15  2021 /Users/felicity/mimic/core/patients.csv.gz
+-rw-rw-r--@ 1 felicity  staff  53014503 Mar 15  2021 /Users/felicity/mimic/core/transfers.csv.gz
+"

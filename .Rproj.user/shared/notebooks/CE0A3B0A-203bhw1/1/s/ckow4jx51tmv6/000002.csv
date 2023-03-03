@@ -1,0 +1,15 @@
+"0","for char in Elizabeth Jane Lydia Darcy
+do
+  echo $char:
+ cat pg42671.txt | grep -o $char | wc -l
+done"
+"1","Elizabeth:
+     634
+Jane:
+"
+"1","     294
+Lydia:
+     170
+Darcy:
+     417
+"

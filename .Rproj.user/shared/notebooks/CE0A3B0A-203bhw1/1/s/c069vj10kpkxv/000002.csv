@@ -1,0 +1,14 @@
+"0","gzcat ~/mimic/core/admissions.csv.gz |\
+ awk -F "","" 'NR == 1 {print $6}; NR > 1 {print $6 | ""sort | uniq -c""}' "
+"1","admission_type
+"
+"1","7254 AMBULATORY OBSERVATION
+21581 DIRECT EMER.
+19991 DIRECT OBSERVATION
+72072 ELECTIVE
+100445 EU OBSERVATION
+157896 EW EMER.
+55497 OBSERVATION ADMIT
+41074 SURGICAL SAME DAY ADMISSION
+47930 URGENT
+"

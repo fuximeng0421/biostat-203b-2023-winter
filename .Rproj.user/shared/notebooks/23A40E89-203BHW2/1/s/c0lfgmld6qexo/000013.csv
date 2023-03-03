@@ -1,0 +1,4 @@
+"0","ggplot(data = admissions_tble) + "
+"0","  stat_count(mapping = aes(x = hour(admittime))) +"
+"0","  labs(title = ""Admission by hour"") +"
+"0","  labs(x = ""Admission hour"")"

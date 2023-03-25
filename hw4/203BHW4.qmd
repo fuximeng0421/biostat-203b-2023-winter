@@ -1,0 +1,477 @@
+---
+title: "Biostat 203B Homework 4"
+subtitle: Due Mar 24 @ 11:59PM
+author: Ximeng Fu 406071937
+format:
+  html:
+    theme: cosmo
+    embed-resources: true
+    number-sections: true
+    toc: true
+    toc-depth: 4
+    toc-location: left
+    code-fold: false
+knitr:
+  opts_chunk: 
+    cache: false    
+    echo: true
+    fig.align: 'center'
+    fig.width: 6
+    fig.height: 4
+    message: FALSE
+---
+
+Display machine information:
+```{r}
+
+sessionInfo()
+```
+Load database libraries and the tidyverse frontend:
+```{r}
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(tidymodels))
+suppressPackageStartupMessages(library(lubridate))
+```
+
+## Predicting 30-day mortality
+
+Using the ICU cohort `icu_cohort.rds` you built in Homework 3, develop at least three analytic approaches for predicting the 30-day mortality of patients admitted to ICU using demographic information (gender, age, marital status, ethnicity), first lab measurements during ICU stay, and first vital measurements during ICU stay. For example, you can use (1) logistic regression with elastic net (lasso + ridge) penalty (e.g., glmnet or keras package), (2) random forest, (3) boosting, and (4) support vector machines, or (5) MLP neural network (keras package)
+
+1. Partition data into 50% training set and 50% test set. Stratify partitioning according the 30-day mortality status.
+
+```{r}
+lgicu_cohort <- read_rds("mimiciv_shiny/icu_cohort.rds")
+categorical_features <- c(
+  "gender", 
+  "marital_status",
+  "ethnicity" 
+ )
+
+numeric_features <- c(
+  "potassium",
+  "anchor_age",
+  "age",
+  "bicarbonate", 
+  "chloride",
+  "creatinine", 
+  "glucose",
+  "sodium",
+  "hematocrit",  
+  "n_wb_cell", 
+  "RR",
+  "HR", 
+  "Systolic_BP",
+  "Mean_BP", 
+  "BT"
+)
+features <- c(categorical_features, numeric_features)
+icu_cohort <- lgicu_cohort %>%
+  select(features, thirty_day_mort) %>%
+  mutate(thirty_day_mort = as.factor(thirty_day_mort)) %>%
+  print(width = Inf)
+  
+```
+
+```{r}
+set.seed(203)
+data_split <- initial_split(
+  icu_cohort,
+  prop = 0.5,
+  strata = "thirty_day_mort"
+)
+training_set <- training(data_split)
+test_set <- testing(data_split)
+```
+2. Train and tune the models using the training set.
+
+
+
+3. Compare model classification performance on the test set. Report both the area under ROC curve and accuracy for each model.
+## Logistic Regression
+```{r}
+library(GGally)
+library(gtsummary)
+library(tidyverse)
+library(tidymodels)
+```
+
+```{r}
+logit_recipe <- 
+  recipe(
+    thirty_day_mort ~ ., 
+    data = training_set
+  ) %>%
+  step_impute_mean(anchor_age,
+                   hematocrit,
+                   potassium,
+                   creatinine, chloride,
+                   sodium, n_wb_cell,
+                   bicarbonate, glucose,
+                   HR,
+                   Systolic_BP,
+                   BT,
+                   Mean_BP,
+                   RR,
+                   age) %>%
+    step_impute_mode(marital_status,
+                   ethnicity,
+                   gender) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_numeric_predictors()) %>% 
+step_normalize(all_numeric_predictors()) %>% 
+prep(training = training_set, retain = TRUE)
+logit_recipe
+```
+
+```{r}
+logit_mod <- 
+  logistic_reg(
+    penalty = tune(), 
+    mixture = tune()
+  ) %>% 
+  set_engine("glmnet", standardize = FALSE)
+logit_mod
+```
+```{r}
+logit_wf <- workflow() %>%
+  add_recipe(logit_recipe) %>%
+  add_model(logit_mod)
+logit_wf
+```
+```{r}
+param_grid <- grid_regular(
+  penalty(range = c(-6, 3)), 
+  mixture(),
+  levels = c(100, 5)
+  )
+param_grid
+```
+```{r}
+set.seed(203)
+
+folds <- vfold_cv(training_set, v = 5)
+folds
+```
+
+```{r}
+
+logit_fit <- logit_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid,
+    metrics = metric_set(roc_auc, accuracy)
+    )
+
+```
+```{r}
+logit_fit
+```
+```{r}
+logit_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = penalty, y = mean, color = mixture)) +
+  geom_point() +
+  labs(x = "Penalty", y = "CV AUC") +
+  scale_x_log10()
+```
+```{r}
+logit_fit %>%
+  show_best("roc_auc")
+```
+```{r}
+best_logit <- logit_fit %>%
+  select_best("roc_auc")
+best_logit
+```
+
+```{r}
+# Final workflow
+final_wf <- logit_wf %>%
+  finalize_workflow(best_logit)
+final_wf
+# Fit the whole training set, then predict the test cases
+final_fit <- 
+  final_wf %>%
+  last_fit(data_split)
+final_fit
+# Test metrics
+final_fit %>% 
+  collect_metrics()
+```
+
+## Random Forest
+```{r}
+# Load libraries
+library(GGally)
+library(gtsummary)
+library(ranger)
+library(tidyverse)
+library(tidymodels)
+
+```
+
+```{r}
+rf_recipe <- 
+  recipe(
+    thirty_day_mort ~ ., 
+    data = training_set
+  ) %>%
+  step_impute_mean(anchor_age,
+                   hematocrit,
+                   potassium,
+                   creatinine, chloride,
+                   sodium, n_wb_cell,
+                   bicarbonate, glucose,
+                   HR,
+                   Systolic_BP,
+                   BT,
+                   Mean_BP,
+                   RR,
+                   age) %>%
+    step_impute_mode(marital_status,
+                   ethnicity,
+                   gender) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_numeric_predictors()) %>% 
+step_normalize(all_numeric_predictors()) %>% 
+prep(training = training_set, retain = TRUE)
+rf_recipe
+```
+
+```{r}
+rf_mod <- 
+  rand_forest(
+    mode = "classification",
+    # Number of predictors randomly sampled in each split
+    mtry = tune(),
+    # Number of trees in ensemble
+    trees = tune()
+  ) %>% 
+  set_engine("ranger")
+rf_mod
+```
+
+```{r}
+rf_wf <- workflow() %>%
+  add_recipe(rf_recipe) %>%
+  add_model(rf_mod)
+rf_wf
+param_grid <- grid_regular(
+  trees(range = c(100L, 300L)), 
+  mtry(range = c(1L, 5L)),
+  levels = c(3, 5)
+  )
+param_grid
+```
+
+```{r}
+set.seed(203)
+
+folds <- vfold_cv(training_set, v = 5)
+folds
+```
+
+```{r}
+rf_fit <- rf_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid,
+    metrics = metric_set(roc_auc, accuracy)
+    )
+rf_fit
+```
+
+```{r}
+rf_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = trees, y = mean, color = mtry)) +
+  geom_point() + 
+  # geom_line() + 
+  labs(x = "Num. of Trees", y = "CV AUC")
+```
+
+```{r}
+rf_fit %>%
+  show_best("roc_auc")
+```
+```{r}
+best_rf <- rf_fit %>%
+  select_best("roc_auc")
+best_rf
+```
+
+```{r}
+# Final workflow
+final_wf <- rf_wf %>%
+  finalize_workflow(best_rf)
+final_wf
+# Fit the whole training set, then predict the test cases
+final_fit <- 
+  final_wf %>%
+  last_fit(data_split)
+final_fit
+# Test metrics
+final_fit %>% 
+  collect_metrics()
+```
+
+## Boosting
+```{r}
+# Load libraries
+library(GGally)
+library(gtsummary)
+library(ranger)
+library(tidyverse)
+library(tidymodels)
+library(xgboost)
+
+boosticu_cohort <- read_rds("mimiciv_shiny/icu_cohort.rds")
+categorical_features <- c(
+  "gender", 
+  "marital_status",
+  "ethnicity" 
+ )
+
+numeric_features <- c(
+  "potassium",
+  "anchor_age",
+  "age",
+  "bicarbonate", 
+  "chloride",
+  "creatinine", 
+  "glucose",
+  "sodium",
+  "hematocrit",  
+  "n_wb_cell", 
+  "RR",
+  "HR", 
+  "Systolic_BP",
+  "Mean_BP", 
+  "BT"
+)
+features <- c(categorical_features, numeric_features)
+booicu_cohort <- boosticu_cohort %>%
+  select(features, thirty_day_mort) %>%
+  mutate(thirty_day_mort = as.character(thirty_day_mort)) %>%
+  print(width = Inf)
+```
+```{r}
+set.seed(203)
+boodata_split <- initial_split(
+  booicu_cohort,
+  prop = 0.5,
+  strata = "thirty_day_mort"
+)
+bootraining_set <- training(boodata_split)
+bootest_set <- testing(boodata_split)
+```
+
+```{r}
+gb_recipe <- 
+  recipe(
+    thirty_day_mort ~ ., 
+    data = bootraining_set
+  ) %>%
+  step_impute_mean(anchor_age,
+                   hematocrit,
+                   potassium,
+                   creatinine, chloride,
+                   sodium, n_wb_cell,
+                   bicarbonate, glucose,
+                   HR,
+                   Systolic_BP,
+                   BT,
+                   Mean_BP,
+                   RR,
+                   age) %>%
+    step_impute_mode(marital_status,
+                   ethnicity,
+                   gender) %>%
+  step_dummy(all_nominal_predictors()) %>%
+  step_zv(all_numeric_predictors()) %>% 
+step_normalize(all_numeric_predictors()) %>% 
+prep(training = bootraining_set, retain = TRUE)
+gb_recipe
+```
+```{r}
+gb_mod <- 
+  boost_tree(
+    mode = "classification",
+    trees = 1000, 
+    tree_depth = tune(),
+    learn_rate = tune()
+  ) %>% 
+  set_engine("xgboost")
+gb_mod
+```
+```{r}
+gb_wf <- workflow() %>%
+  add_recipe(gb_recipe) %>%
+  add_model(gb_mod)
+gb_wf
+```
+```{r}
+param_grid <- grid_regular(
+  tree_depth(range = c(1L, 3L)),
+  learn_rate(range = c(-5, 2), trans = log10_trans()),
+  levels = c(3, 10)
+  )
+param_grid
+```
+```{r}
+set.seed(203)
+
+folds <- vfold_cv(bootraining_set, v = 5)
+folds
+```
+```{r}
+gb_fit <- gb_wf %>%
+  tune_grid(
+    resamples = folds,
+    grid = param_grid,
+    metrics = metric_set(roc_auc, accuracy)
+    )
+gb_fit
+```
+```{r}
+gb_fit %>%
+  collect_metrics() %>%
+  print(width = Inf) %>%
+  filter(.metric == "roc_auc") %>%
+  ggplot(mapping = aes(x = learn_rate, y = mean, color = tree_depth)) +
+  geom_point() +
+  labs(x = "Learning Rate", y = "CV AUC") +
+  scale_x_log10()
+```
+```{r}
+gb_fit %>%
+  show_best("roc_auc")
+```
+```{r}
+best_gb <- gb_fit %>%
+  select_best("roc_auc")
+best_gb
+```
+```{r}
+# Final workflow
+final_wf <- gb_wf %>%
+  finalize_workflow(best_gb)
+final_wf
+```
+```{r}
+# Fit the whole training set, then predict the test cases
+final_fit <- 
+  final_wf %>%
+  last_fit(boodata_split)
+final_fit
+```
+```{r}
+# Test metrics
+final_fit %>% 
+  collect_metrics()
+```
